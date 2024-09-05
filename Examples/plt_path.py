@@ -55,8 +55,8 @@ def update_paths(frame, ax, grid, agents, agent_positions, colors):
         color = colors[agent['number']]
         elapsed_time = 0
         for section in path:
-            start = (section['start_i'], section['start_j'])
-            goal = (section['goal_i'], section['goal_j'])
+            start = (section['start_i'] + 0.5, section['start_j'] + 0.5)
+            goal = (section['goal_i'] + 0.5, section['goal_j'] + 0.5)
             ax.plot([start[0], goal[0]], [start[1], goal[1]], color=color, linestyle='-')  # Draw entire path with solid line
             ax.plot(start[0], start[1], color=color, marker='o')  # Draw start point
             ax.plot(goal[0], goal[1], color=color, marker='o')  # Draw goal point
@@ -73,16 +73,17 @@ def update_paths(frame, ax, grid, agents, agent_positions, colors):
             # If the agent has reached the end of its path, keep it at the last goal position
             last_section = path[-1]
             agent_positions[agent['number']] = (
-                last_section['goal_i'],
-                last_section['goal_j']
+                last_section['goal_i'] + 0.5,
+                last_section['goal_j'] + 0.5
             )
     
     # Draw all agents at their current positions
     for agent_number, position in agent_positions.items():
-        ax.plot(position[0], position[1], color=colors[agent_number], marker='o')
+        ax.plot(position[0], position[1], color=colors[agent_number], marker='o', markersize=15)
+        ax.text(position[0], position[1], str(agent_number + 1), color='white', ha='center', va='center') 
     
     ax.set_aspect('equal')
-    plt.xlim(0, len(grid[0]))
+    plt.xlim(0, len(grid[0]) - 6)
     plt.ylim(0, len(grid[1]))  # Invert the Y-axis by setting limits in reverse order
 
 # Main function
