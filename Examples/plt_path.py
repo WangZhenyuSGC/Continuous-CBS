@@ -55,9 +55,11 @@ def update_paths(frame, ax, grid, agents, agent_positions, colors):
         color = colors[agent['number']]
         elapsed_time = 0
         for section in path:
-            start = (section['start_j'] + 0.5, len(grid) - 1 - section['start_i'] + 0.5)
-            goal = (section['goal_j'] + 0.5, len(grid) - 1 - section['goal_i'] + 0.5)
+            start = (section['start_i'], section['start_j'])
+            goal = (section['goal_i'], section['goal_j'])
             ax.plot([start[0], goal[0]], [start[1], goal[1]], color=color, linestyle='-')  # Draw entire path with solid line
+            ax.plot(start[0], start[1], color=color, marker='o')  # Draw start point
+            ax.plot(goal[0], goal[1], color=color, marker='o')  # Draw goal point
             if elapsed_time <= frame < elapsed_time + section['duration']:
                 progress = (frame - elapsed_time) / section['duration']
                 current_position = (
@@ -71,8 +73,8 @@ def update_paths(frame, ax, grid, agents, agent_positions, colors):
             # If the agent has reached the end of its path, keep it at the last goal position
             last_section = path[-1]
             agent_positions[agent['number']] = (
-                last_section['goal_j'] + 0.5,
-                len(grid) - 1 - last_section['goal_i'] + 0.5
+                last_section['goal_i'],
+                last_section['goal_j']
             )
     
     # Draw all agents at their current positions
@@ -81,8 +83,7 @@ def update_paths(frame, ax, grid, agents, agent_positions, colors):
     
     ax.set_aspect('equal')
     plt.xlim(0, len(grid[0]))
-    plt.ylim(0, len(grid))
-    plt.gca().invert_yaxis()
+    plt.ylim(0, len(grid[1]))  # Invert the Y-axis by setting limits in reverse order
 
 # Main function
 def main():
@@ -104,7 +105,7 @@ def main():
     colors = [hsv_to_rgb((i / num_agents, 1, 1)) for i in range(num_agents)]
     agent_colors = {agent['number']: colors[i] for i, agent in enumerate(agents)}
     
-    ani = animation.FuncAnimation(fig, update_paths, frames=int(total_duration * 10), fargs=(ax, grid, agents, agent_positions, agent_colors), interval=200, repeat=True)
+    ani = animation.FuncAnimation(fig, update_paths, frames=int(total_duration * 10), fargs=(ax, grid, agents, agent_positions, agent_colors), interval=500, repeat=False)
     plt.show()
 
 if __name__ == '__main__':
