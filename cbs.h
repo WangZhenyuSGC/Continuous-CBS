@@ -14,7 +14,7 @@ class CBS
 {
 public:
     CBS() {}
-    Solution find_solution(const Map &map, const Task &task, const Config &cfg);
+    Solution find_solution(Map &map, Task &task, Config &cfg);
     bool init_root(const Map &map, const Task &task);
     std::list<Constraint> get_constraints(CBS_Node *node, int agent_id = -1);
     //std::list<Constraint> merge_constraints(std::list<Constraint> constraints);

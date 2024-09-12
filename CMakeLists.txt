@@ -56,4 +56,13 @@ set( HEADER_FILES
 	 simplex/sizemismatchexception.h
 	 simplex/variable.h)
 
-add_executable( CCBS ${SOURCE_FILES} ${HEADER_FILES} )
+add_library(CCBS SHARED ${HEADER_FILES} ${SOURCE_FILES})
+
+set_target_properties(CCBS PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
+install(FILES ${HEADER_FILES} DESTINATION include)
+install(TARGETS CCBS DESTINATION lib)

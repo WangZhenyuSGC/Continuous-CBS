@@ -239,7 +239,7 @@ Conflict CBS::get_conflict(std::list<Conflict> &conflicts)
     return conflict;
 }
 
-Solution CBS::find_solution(const Map &map, const Task &task, const Config &cfg)
+Solution CBS::find_solution(Map &map, Task &task, Config &cfg)
 {
     config = cfg;
     this->map = &map;
