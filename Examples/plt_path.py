@@ -42,7 +42,11 @@ def parse_xml(map_file_path, log_file_path):
 def draw_grid(ax, grid):
     for i in range(len(grid)):
         for j in range(len(grid[i])):
-            rect = patches.Rectangle((j, len(grid) - 1 - i), 1, 1, linewidth=1, edgecolor='black', facecolor='white')
+            if grid[i][j] == 1:
+                facecolor = 'black'
+            else:
+                facecolor = 'white'
+            rect = patches.Rectangle((i - 0.5, j - 0.5), 1, 1, linewidth=1, edgecolor='black', facecolor=facecolor)
             ax.add_patch(rect)
 
 # Function to update the paths
@@ -55,8 +59,8 @@ def update_paths(frame, ax, grid, agents, agent_positions, colors):
         color = colors[agent['number']]
         elapsed_time = 0
         for section in path:
-            start = (section['start_i'] + 0.5, section['start_j'] + 0.5)
-            goal = (section['goal_i'] + 0.5, section['goal_j'] + 0.5)
+            start = (section['start_i'] , section['start_j'] )
+            goal = (section['goal_i'] , section['goal_j'] )
             ax.plot([start[0], goal[0]], [start[1], goal[1]], color=color, linestyle='-')  # Draw entire path with solid line
             ax.plot(start[0], start[1], color=color, marker='o')  # Draw start point
             ax.plot(goal[0], goal[1], color=color, marker='o')  # Draw goal point
@@ -73,23 +77,23 @@ def update_paths(frame, ax, grid, agents, agent_positions, colors):
             # If the agent has reached the end of its path, keep it at the last goal position
             last_section = path[-1]
             agent_positions[agent['number']] = (
-                last_section['goal_i'] + 0.5,
-                last_section['goal_j'] + 0.5
+                last_section['goal_i'] ,
+                last_section['goal_j'] 
             )
     
     # Draw all agents at their current positions
     for agent_number, position in agent_positions.items():
-        ax.plot(position[0], position[1], color=colors[agent_number], marker='o', markersize=15)
+        ax.plot(position[0], position[1], color=colors[agent_number], marker='o', markersize=10)
         ax.text(position[0], position[1], str(agent_number + 1), color='white', ha='center', va='center') 
     
     ax.set_aspect('equal')
-    plt.xlim(0, len(grid[0]) - 6)
-    plt.ylim(0, len(grid[1]))  # Invert the Y-axis by setting limits in reverse order
+    plt.xlim(-0.5, len(grid[0]) - 6)
+    plt.ylim(-0.5, len(grid[1]))  # Invert the Y-axis by setting limits in reverse order
 
 # Main function
 def main():
-    log_path = '/home/0000410764/oss/Continuous-CBS/Examples/grid_task_log.xml'  # Replace with your XML file path
-    map_path = '/home/0000410764/oss/Continuous-CBS/Examples/grid_map.xml'  # Replace with your XML file path
+    log_path = '/home/0000410764/oss/Python-RVO2/simulator/grid_task_log.xml'  # Replace with your XML file path
+    map_path = '/home/0000410764/oss/Python-RVO2/simulator/grid_map.xml'  # Replace with your XML file path
     grid, agents = parse_xml(map_path, log_path)
     
     fig, ax = plt.subplots()
@@ -106,7 +110,7 @@ def main():
     colors = [hsv_to_rgb((i / num_agents, 1, 1)) for i in range(num_agents)]
     agent_colors = {agent['number']: colors[i] for i, agent in enumerate(agents)}
     
-    ani = animation.FuncAnimation(fig, update_paths, frames=int(total_duration * 10), fargs=(ax, grid, agents, agent_positions, agent_colors), interval=500, repeat=False)
+    ani = animation.FuncAnimation(fig, update_paths, frames=int(total_duration * 30), fargs=(ax, grid, agents, agent_positions, agent_colors), interval=300, repeat=True)
     plt.show()
 
 if __name__ == '__main__':
