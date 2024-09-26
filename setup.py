@@ -17,7 +17,7 @@ class BuildCCBSExt(_build_ext):
             os.makedirs(build_dir)
             subprocess.check_call(['cmake', '../..'],
                                     cwd=build_dir)
-        subprocess.check_call(['cmake', '--build', '../..'], cwd=build_dir)
+        subprocess.check_call(['cmake', '--build', './'], cwd=build_dir)
 
         _build_ext.run(self)
 
