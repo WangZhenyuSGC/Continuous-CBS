@@ -22,18 +22,50 @@ def parse_xml(map_file_path, log_file_path):
     
     agents = []
     log_element = log_root.find('log')
+    root_agents = log_root.findall('agent')  # Get agents from the root element
+    
+    # Create a mapping of agent numbers to root agents based on start positions
+    root_agent_map = {}
+    for i, agent in enumerate(root_agents):
+        start_i = float(agent.get('start_i'))
+        start_j = float(agent.get('start_j'))
+        root_agent_map[(start_i, start_j)] = agent
+    
     for agent in log_element.findall('agent'):
-        agent_info = {'number': int(agent.get('number')), 'path': []}
+        agent_number = int(agent.get('number'))
+        agent_info = {'number': agent_number, 'path': []}
         path_element = agent.find('path')
-        for section in path_element.findall('section'):
-            section_info = {
-                'start_i': int(section.get('start_i')),
-                'start_j': int(section.get('start_j')),
-                'goal_i': int(section.get('goal_i')),
-                'goal_j': int(section.get('goal_j')),
-                'duration': float(section.get('duration'))
-            }
-            agent_info['path'].append(section_info)
+        
+        if path_element is not None and path_element.findall('section'):
+            for section in path_element.findall('section'):
+                section_info = {
+                    'start_i': float(section.get('start_i')),
+                    'start_j': float(section.get('start_j')),
+                    'goal_i': float(section.get('goal_i')),
+                    'goal_j': float(section.get('goal_j')),
+                    'duration': float(section.get('duration'))
+                }
+                agent_info['path'].append(section_info)
+        else:
+            # Use the start position from the root element if no path sections are found
+            root_agent = None
+            for agent in root_agents:
+                if agent_number == root_agents.index(agent):
+                    root_agent = agent
+                    break
+            if root_agent is not None:
+                start_i = float(root_agent.get('start_i'))
+                start_j = float(root_agent.get('start_j'))
+                goal_i = float(root_agent.get('goal_i'))
+                goal_j = float(root_agent.get('goal_j'))
+                agent_info['path'].append({
+                    'start_i': start_i,
+                    'start_j': start_j,
+                    'goal_i': goal_i,
+                    'goal_j': goal_j,
+                    'duration': 0  # No duration since there's no movement
+                })
+        
         agents.append(agent_info)
     
     return grid, agents
@@ -95,7 +127,7 @@ def main():
     log_path = '/home/0000410764/oss/Python-RVO2/simulator/grid_task_log.xml'  # Replace with your XML file path
     map_path = '/home/0000410764/oss/Python-RVO2/simulator/grid_map.xml'  # Replace with your XML file path
     grid, agents = parse_xml(map_path, log_path)
-    
+    # print(agents)
     fig, ax = plt.subplots()
     draw_grid(ax, grid)
     
